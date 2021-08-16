@@ -124,6 +124,18 @@ components.diagnostics()                            *components.diagnostics()*
 ================================================================================
 
 ================================================================================
+lsp.plain_goal()                                            *lsp.plain_goal()*
+    Fetch goal state information from the server.
+
+
+
+lsp.plain_term_goal()                                  *lsp.plain_term_goal()*
+    Fetch term goal state information from the server.
+
+
+
+
+================================================================================
 sorry.fill()                                                    *sorry.fill()*
     Fill the current cursor position with `sorry`s to discharge all goals.
 
