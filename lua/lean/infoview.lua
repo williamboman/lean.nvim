@@ -1,5 +1,4 @@
 local components = require('lean.infoview.components')
-local lean3 = require('lean.lean3')
 local leanlsp = require('lean.lsp')
 local is_lean_buffer = require('lean').is_lean_buffer
 local set_augroup = require('lean._util').set_augroup
@@ -186,21 +185,16 @@ function Pin:update()
     a.util.scheduler()
     if self.tick ~= this_tick then return end
 
-    local lines
-    if vim.opt.filetype:get() == "lean3" then
-      lines = lean3.update_infoview()
-    else
-      local _, _, goal = plain_goal(0)
-      if self.tick ~= this_tick then return end
+    local _, _, goal = plain_goal(0)
+    if self.tick ~= this_tick then return end
 
-      local _, _, term_goal = plain_term_goal(0)
-      if self.tick ~= this_tick then return end
+    local _, _, term_goal = plain_term_goal(0)
+    if self.tick ~= this_tick then return end
 
-      lines = components.goal(goal)
-      if not vim.tbl_isempty(lines) then table.insert(lines, '') end
-      vim.list_extend(lines, components.term_goal(term_goal))
-      vim.list_extend(lines, components.diagnostics())
-    end
+    local lines = components.goal(goal)
+    if not vim.tbl_isempty(lines) then table.insert(lines, '') end
+    vim.list_extend(lines, components.term_goal(term_goal))
+    vim.list_extend(lines, components.diagnostics())
     if self.tick ~= this_tick then return end
 
     self.msg = lines

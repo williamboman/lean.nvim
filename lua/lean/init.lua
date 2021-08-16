@@ -33,11 +33,11 @@ function lean.setup(opts)
   opts.infoview = opts.infoview or {}
   require'lean.infoview'.enable(opts.infoview)
 
-  opts.lsp3 = opts.lsp3 or {}
-  if opts.lsp3.enable ~= false then require'lspconfig'.lean3ls.setup(opts.lsp3) end
-
   opts.lsp = opts.lsp or {}
-  if opts.lsp.enable ~= false then require'lean.lsp'.enable(opts.lsp) end
+  if opts.lsp.enable ~= false then require'lean.lsp'.enable(opts.lsp, require'lspconfig'.leanls) end
+
+  opts.lsp3 = opts.lsp3 or {}
+  if opts.lsp3.enable ~= false then require'lean.lsp'.enable(opts.lsp3, require'lspconfig'.lean3ls) end
 
   opts.treesitter = opts.treesitter or {}
   if opts.treesitter.enable ~= false then require'lean.treesitter'.enable(opts.treesitter) end

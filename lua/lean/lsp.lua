@@ -1,6 +1,6 @@
 local lsp = { handlers = {} }
 
-function lsp.enable(opts)
+function lsp.enable(opts, lspconfig_leanlsp)
   opts.commands = vim.tbl_extend("keep", opts.commands or {}, {
     LeanPlainGoal = {
       lsp.plain_goal;
@@ -12,13 +12,13 @@ function lsp.enable(opts)
     };
   })
   opts.handlers = vim.tbl_extend("keep", opts.handlers or {}, {
-    ["$/lean/plainGoal"] = lsp.handlers.plain_goal_handler;
-    ["$/lean/plainTermGoal"] = lsp.handlers.plain_term_goal_handler;
+    ["$/lean/plainGoal"] = lsp.handlers.plain_goal;
+    ["$/lean/plainTermGoal"] = lsp.handlers.plain_term_goal;
   })
-  require('lspconfig').leanls.setup(opts)
+  lspconfig_leanlsp.setup(opts)
 end
 
--- Fetch goal state information from the server.
+--- Fetch goal state information from the server.
 function lsp.plain_goal(bufnr, handler)
   -- Shift forward by 1, since in vim it's easier to reach word
   -- boundaries in normal mode.
@@ -27,32 +27,27 @@ function lsp.plain_goal(bufnr, handler)
   return vim.lsp.buf_request(bufnr, "$/lean/plainGoal", params, handler)
 end
 
--- Fetch term goal state information from the server.
+function lsp.handlers.plain_goal (_, method, result, _, _, config)
+  config = config or {}
+  config.focus_id = method
+  if not (result and result.rendered) then return end
+  local markdown_lines = vim.lsp.util.trim_empty_lines(
+    vim.lsp.util.convert_input_to_markdown_lines(result.rendered)
+  )
+  if vim.tbl_isempty(markdown_lines) then return end
+  return vim.lsp.util.open_floating_preview(markdown_lines, "markdown", config)
+end
+
+--- Fetch term goal state information from the server.
 function lsp.plain_term_goal(bufnr, handler)
   local params = vim.lsp.util.make_position_params()
   return vim.lsp.buf_request(bufnr, "$/lean/plainTermGoal", params, handler)
 end
 
-function lsp.handlers.plain_goal_handler (_, method, result, _, _, config)
+function lsp.handlers.plain_term_goal(_, method, result, _, _, config)
   config = config or {}
   config.focus_id = method
-  if not (result and result.rendered) then
-    return
-  end
-  local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.rendered)
-  markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-  if vim.tbl_isempty(markdown_lines) then
-    return
-  end
-  return vim.lsp.util.open_floating_preview(markdown_lines, "markdown", config)
-end
-
-function lsp.handlers.plain_term_goal_handler (_, method, result, _, _, config)
-  config = config or {}
-  config.focus_id = method
-  if not (result and result.goal) then
-    return
-  end
+  if not (result and result.goal) then return end
   return vim.lsp.util.open_floating_preview(
     vim.split(result.goal, '\n'), "leaninfo", config
   )
