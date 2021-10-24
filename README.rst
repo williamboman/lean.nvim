@@ -281,9 +281,24 @@ Full Configuration & Settings Information
         width = 50,
         height = 20,
 
-        -- Show indicators for pin locations when entering an infoview window?
-        -- always | never | auto (= only when there are multiple pins)
-        indicators = "auto",
+        -- Widget support
+        widgets = {
+            -- Enable widgets?
+            enable = true,
+        },
+
+        -- Options which apply to infoview pins (pinned infoview state)
+        pins = {
+            -- Pause pins when they are created.
+            autopause = false,
+            -- Show indicators for pins when entering an infoview window?
+            -- always | never | auto (= only when there are multiple pins)
+            indicators = "auto",
+        }
+
+        -- Mappings which will be set within the Infoview window itself.
+        -- The defaults are listed below.
+        mappings = {},
       },
 
       -- Progress bar support

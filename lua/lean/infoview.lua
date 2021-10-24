@@ -28,16 +28,30 @@ local infoview = {
 }
 local options = {
   _DEFAULTS = {
+    -- Automatically open an infoview on entering a Lean buffer?
+    autoopen = true,
+
+    -- Set infoview windows' starting dimensions.
+    -- Windows are opened horizontally or vertically depending on spacing.
     width = 50,
     height = 20,
 
-    autoopen = true,
-    autopause = false,
-    indicators = "auto",
-    lean3 = { show_filter = true },
-    show_processing = true,
-    use_widget = true,
+    -- Lean widget support
+    widgets = {
+        -- Enable widgets?
+        enable = true,
+    },
 
+    -- Options which apply to infoview pins (pinned infoview state)
+    pins = {
+      -- Pause pins when they are created.
+      autopause = false,
+      -- Show indicators for pins when entering an infoview window?
+      -- always | never | auto (= only when there are multiple pins)
+      indicators = "auto",
+    },
+
+    -- Mappings which will be set within the Infoview window itself.
     mappings = {
       ["K"] = [[click]],
       ["<CR>"] = [[click]],
@@ -48,7 +62,10 @@ local options = {
       ["U"] = [[clear_undo]],
       ["C"] = [[clear_all]],
       ["<LocalLeader><Tab>"] = [[goto_last_window]]
-    }
+    },
+
+    lean3 = { show_filter = true },
+    show_processing = true,
   }
 }
 
@@ -190,7 +207,7 @@ function Info:new()
   local new_info = {
     id = #infoview._info_by_id + 1,
     bufnr = vim.api.nvim_create_buf(false, true),
-    pin = Pin:new(options.autopause, options.use_widget),
+    pin = Pin:new(options.pins.autopause, options.widgets.enable),
     pins = {},
     div = html.Div:new({info = self}, "", "info", nil, true)
   }
@@ -219,7 +236,7 @@ end
 function Info:add_pin()
   table.insert(self.pins, self.pin)
   self:maybe_show_pin_extmark()
-  self.pin = Pin:new(options.autopause, options.use_widget)
+  self.pin = Pin:new(options.pins.autopause, options.widgets.enable)
   self.pin:add_parent_info(self)
   self:render()
 end
@@ -233,9 +250,9 @@ end
 
 --- Show a pin extmark if it is appropriate based on configuration.
 function Info:maybe_show_pin_extmark(...)
-  if not options.indicators or options.indicators == "never" then return end
+  if not options.pins.indicators or options.pins.indicators == "never" then return end
   -- self.pins is apparently all *other* pins, so we check it's empty
-  if options.indicators == "auto" and #self.pins == 0 then return end
+  if options.pins.indicators == "auto" and #self.pins == 0 then return end
   self.pin:show_extmark(...)
 end
 
@@ -334,10 +351,16 @@ end
 
 ---@return Pin
 function Pin:new(paused, use_widget)
-  local new_pin = {id = self.next_id, parent_infos = {}, paused = paused,
+  local new_pin = {
+    id = self.next_id,
+    parent_infos = {},
+    paused = paused,
     ticker = util.Ticker:new(),
     data_div = html.Div:new({pin = self}, "", "pin-data", nil),
-    div = html.Div:new({pin = self}, "", "pin", nil, true), use_widget = use_widget, undo_list = {}}
+    div = html.Div:new({pin = self}, "", "pin", nil, true),
+    use_widget = use_widget,
+    undo_list = {}
+  }
   self.next_id = self.next_id + 1
   infoview._pin_by_id[new_pin.id] = new_pin
 
@@ -864,7 +887,7 @@ end
 
 --- Set whether a new pin is automatically paused.
 function infoview.set_autopause(autopause)
-  options.autopause = autopause
+  options.pins.autopause = autopause
 end
 
 local attached_buffers = {}
