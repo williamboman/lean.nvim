@@ -40,6 +40,9 @@ local options = {
     widgets = {
         -- Enable widgets?
         enable = true,
+
+        -- In Lean 3, show the `filter` widget?
+        lean3 = { show_filter = true },
     },
 
     -- Options which apply to infoview pins (pinned infoview state)
@@ -63,8 +66,6 @@ local options = {
       ["C"] = [[clear_all]],
       ["<LocalLeader><Tab>"] = [[goto_last_window]]
     },
-
-    lean3 = { show_filter = true },
     show_processing = true,
   }
 }
@@ -700,8 +701,16 @@ function Pin:__update(tick, delay, lean3_opts)
 
     if vim.api.nvim_buf_get_option(buf, "ft") == "lean3" then
       lean3_opts = lean3_opts or {}
-      lean3.update_infoview(self, new_data_div, buf, params,
-        self.use_widget, lean3_opts, options.lean3, options.show_processing)
+      lean3.update_infoview(
+        self,
+        new_data_div,
+        buf,
+        params,
+        self.use_widget,
+        lean3_opts,
+        options.widgets.lean3,
+        options.show_processing
+      )
       goto finish
     end
 

@@ -285,6 +285,9 @@ Full Configuration & Settings Information
         widgets = {
             -- Enable widgets?
             enable = true,
+
+            -- In Lean 3, show the `filter` widget?
+            lean3 = { show_filter = true },
         },
 
         -- Options which apply to infoview pins (pinned infoview state)

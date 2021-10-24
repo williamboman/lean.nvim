@@ -22,8 +22,8 @@ local default_config = {
   infoview = {
     autoopen = false,
     autopause = true,
+    widgets = { lean3 = { show_filter = false } },
     show_processing = false,
-    lean3 = { show_filter = false }
   },
   lsp3 = {
     enable = false
