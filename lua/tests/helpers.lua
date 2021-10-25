@@ -21,16 +21,12 @@ local default_config = {
   mappings = false,
   infoview = {
     autoopen = false,
-    autopause = true,
+    pins = { autopause = true },
     widgets = { lean3 = { show_filter = false } },
     show_processing = false,
   },
-  lsp3 = {
-    enable = false
-  },
-  lsp = {
-    enable = false
-  }
+  lsp3 = { enable = false },
+  lsp = { enable = false }
 }
 
 function helpers.setup(config)

@@ -56,7 +56,7 @@ local to_event = {
 }
 
 function lean3.update_infoview(pin, data_div, bufnr, params, use_widget,
-    opts, options, show_processing)
+    opts, options)
   local parent_div = html.Div:new({}, "", "lean-3-widget")
   local widget
 
@@ -256,9 +256,7 @@ function lean3.update_infoview(pin, data_div, bufnr, params, use_widget,
   local state_div
 
   if require"lean.progress".is_processing_at(params) then
-    if show_processing then
-      data_div:insert_div({}, "Processing file...", "processing-msg")
-    end
+    data_div:insert_div({}, "Processing file...", "processing-msg")
     return true
   end
 

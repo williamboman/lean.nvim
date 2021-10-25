@@ -3,7 +3,6 @@ local helpers = require('tests.helpers')
 local fixtures = require('tests.fixtures')
 
 helpers.setup {
-  --infoview = { autoopen = true; autopause = false; show_processing = true },
   infoview = { autoopen = true; autopause = false },
   lsp = { enable = true },
   lsp3 = { enable = true },

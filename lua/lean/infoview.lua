@@ -66,7 +66,6 @@ local options = {
       ["C"] = [[clear_all]],
       ["<LocalLeader><Tab>"] = [[goto_last_window]]
     },
-    show_processing = true,
   }
 }
 
@@ -708,16 +707,13 @@ function Pin:__update(tick, delay, lean3_opts)
         params,
         self.use_widget,
         lean3_opts,
-        options.widgets.lean3,
-        options.show_processing
+        options.widgets.lean3
       )
       goto finish
     end
 
     if require"lean.progress".is_processing_at(params) then
-      if options.show_processing then
-        new_data_div:insert_div({}, "Processing file...", "processing-msg")
-      end
+      new_data_div:insert_div({}, "Processing file...", "processing-msg")
       goto finish
     end
 
